@@ -24,6 +24,7 @@ import net.stirdrem.overgeared.util.ModTags;
 import net.stirdrem.overgeared.recipe.RockKnappingRecipe;
 import net.stirdrem.overgeared.recipe.AlloySmeltingRecipe;
 import net.stirdrem.overgeared.recipe.NetherAlloySmeltingRecipe;
+import net.stirdrem.overgeared.recipe.FletchingRecipe;
 
 import java.util.*;
 
@@ -85,6 +86,18 @@ public class OvergearedEmiPlugin implements EmiPlugin {
             return Component.translatable("container.overgeared.nether_alloy_smelter");
         }
     };
+
+    public static final EmiStack FLETCHING_WORKSTATION = EmiStack.of(net.minecraft.world.level.block.Blocks.FLETCHING_TABLE);
+    public static final EmiRecipeCategory FLETCHING_CATEGORY = new EmiRecipeCategory(
+            OvergearedMod.loc("fletching"),
+            FLETCHING_WORKSTATION,
+            new EmiTexture(OvergearedMod.loc("textures/gui/fletching_table.png"), 0, 0, 16, 16)
+    ) {
+        @Override
+        public Component getName() {
+            return Component.translatable("container.overgeared.fletching_table");
+        }
+    };
     
     // Priority for sorting recipes by category
     private static final Map<String, Integer> CATEGORY_PRIORITY = Map.of(
@@ -131,6 +144,14 @@ public class OvergearedEmiPlugin implements EmiPlugin {
         
         for (RecipeHolder<NetherAlloySmeltingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.NETHER_ALLOY_SMELTING.get())) {
             registry.addRecipe(new NetherAlloySmeltingEmiRecipe(holder));
+        }
+        
+        // Register Fletching
+        registry.addCategory(FLETCHING_CATEGORY);
+        registry.addWorkstation(FLETCHING_CATEGORY, FLETCHING_WORKSTATION);
+        
+        for (RecipeHolder<FletchingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.FLETCHING.get())) {
+            registry.addRecipe(new FletchingEmiRecipe(holder));
         }
         
         // Collect and sort all forging recipes
