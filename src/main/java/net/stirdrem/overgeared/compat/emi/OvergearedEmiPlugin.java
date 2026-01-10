@@ -25,6 +25,7 @@ import net.stirdrem.overgeared.recipe.RockKnappingRecipe;
 import net.stirdrem.overgeared.recipe.AlloySmeltingRecipe;
 import net.stirdrem.overgeared.recipe.NetherAlloySmeltingRecipe;
 import net.stirdrem.overgeared.recipe.FletchingRecipe;
+import net.stirdrem.overgeared.recipe.CastingRecipe;
 
 import java.util.*;
 
@@ -98,6 +99,18 @@ public class OvergearedEmiPlugin implements EmiPlugin {
             return Component.translatable("container.overgeared.fletching_table");
         }
     };
+
+    public static final EmiStack CASTING_WORKSTATION = EmiStack.of(ModBlocks.CASTING_FURNACE.get());
+    public static final EmiRecipeCategory CASTING_CATEGORY = new EmiRecipeCategory(
+            OvergearedMod.loc("casting"),
+            CASTING_WORKSTATION,
+            new EmiTexture(OvergearedMod.loc("textures/gui/casting_smelter.png"), 0, 0, 16, 16)
+    ) {
+        @Override
+        public Component getName() {
+            return Component.translatable("container.overgeared.casting_furnace");
+        }
+    };
     
     // Priority for sorting recipes by category
     private static final Map<String, Integer> CATEGORY_PRIORITY = Map.of(
@@ -152,6 +165,14 @@ public class OvergearedEmiPlugin implements EmiPlugin {
         
         for (RecipeHolder<FletchingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.FLETCHING.get())) {
             registry.addRecipe(new FletchingEmiRecipe(holder));
+        }
+        
+        // Register Casting
+        registry.addCategory(CASTING_CATEGORY);
+        registry.addWorkstation(CASTING_CATEGORY, CASTING_WORKSTATION);
+        
+        for (RecipeHolder<CastingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.CASTING.get())) {
+            registry.addRecipe(new CastingEmiRecipe(holder));
         }
         
         // Collect and sort all forging recipes

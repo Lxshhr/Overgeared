@@ -11,6 +11,7 @@ import net.stirdrem.overgeared.config.ServerConfig;
 import net.stirdrem.overgeared.datapack.MaterialSettingsReloadListener;
 import net.stirdrem.overgeared.recipe.ModRecipeTypes;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -176,12 +177,12 @@ public class ConfigHelper {
     /**
      * Get all material values for an item (useful when an item belongs to multiple materials)
      */
-    public static java.util.Map<String, Integer> getMaterialValuesForItem(ItemStack stack) {
+    public static Map<String, Integer> getMaterialValuesForItem(ItemStack stack) {
         return getMaterialValuesForItem(stack.getItem());
     }
 
-    public static java.util.Map<String, Integer> getMaterialValuesForItem(Item item) {
-        java.util.Map<String, Integer> result = new java.util.HashMap<>();
+    public static Map<String, Integer> getMaterialValuesForItem(Item item) {
+        Map<String, Integer> result = new HashMap<>();
 
         // Add datapack entries
         MaterialSettingsReloadListener.getAllMaterialEntries().stream()
