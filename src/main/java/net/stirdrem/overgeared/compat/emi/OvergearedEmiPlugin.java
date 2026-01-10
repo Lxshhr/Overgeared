@@ -36,15 +36,12 @@ import java.util.*;
 @EmiEntrypoint
 public class OvergearedEmiPlugin implements EmiPlugin {
     
-    private static final ResourceLocation TEXTURE = OvergearedMod.loc("textures/gui/smithing_anvil_jei.png");
-    private static final ResourceLocation KNAPPING_TEXTURE = OvergearedMod.loc("textures/gui/rock_knapping_gui.png");
-    
     public static final EmiStack WORKSTATION = EmiStack.of(ModBlocks.SMITHING_ANVIL.get());
     
     public static final EmiRecipeCategory FORGING_CATEGORY = new EmiRecipeCategory(
             OvergearedMod.loc("forging"),
             WORKSTATION,
-            new EmiTexture(TEXTURE, 0, 0, 16, 16)
+            new EmiTexture(OvergearedMod.loc("textures/gui/smithing_anvil_jei.png"), 0, 0, 16, 16)
     ) {
         @Override
         public Component getName() {
@@ -56,7 +53,7 @@ public class OvergearedEmiPlugin implements EmiPlugin {
     public static final EmiRecipeCategory KNAPPING_CATEGORY = new EmiRecipeCategory(
             OvergearedMod.loc("rock_knapping"),
             KNAPPING_WORKSTATION,
-            new EmiTexture(KNAPPING_TEXTURE, 0, 0, 16, 16)
+            new EmiTexture(OvergearedMod.loc("textures/gui/rock_knapping_gui.png"), 0, 0, 16, 16)
     ) {
         @Override
         public Component getName() {
