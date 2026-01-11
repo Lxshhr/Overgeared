@@ -64,10 +64,9 @@ public class KnappingEmiRecipe implements EmiRecipe {
     public void addWidgets(WidgetHolder widgets) {
         int startX = 4;
         int startY = 4;
-        int slotSize = 16;
         
         // Input Slot
-        widgets.addSlot(inputs.getFirst(), startX, startY + slotSize);
+        widgets.addSlot(inputs.get(0), startX, startY + EmiLayoutConstants.SLOT_SIZE);
         
         // Grid starts after input slot + padding
         int gridStartX = startX + 24;
@@ -79,9 +78,9 @@ public class KnappingEmiRecipe implements EmiRecipe {
             for (int c = 0; c < 3; c++) {
                 if (pattern[r][c]) {
                     widgets.addTexture(STONE_TEXTURE, 
-                        gridStartX + c * slotSize, 
-                        startY + r * slotSize, 
-                        slotSize, slotSize, 
+                        gridStartX + c * EmiLayoutConstants.SLOT_SIZE, 
+                        startY + r * EmiLayoutConstants.SLOT_SIZE, 
+                        EmiLayoutConstants.SLOT_SIZE, EmiLayoutConstants.SLOT_SIZE, 
                         0, 0, 
                         16, 16, 
                         16, 16
@@ -91,10 +90,10 @@ public class KnappingEmiRecipe implements EmiRecipe {
         }
 
         // Arrow matches grid width + padding
-        int gridSize = 3 * slotSize;
-        widgets.addTexture(EmiTexture.EMPTY_ARROW, gridStartX + gridSize + 4, startY + slotSize);
+        int gridSize = 3 * EmiLayoutConstants.SLOT_SIZE;
+        widgets.addTexture(EmiTexture.EMPTY_ARROW, gridStartX + gridSize + 4, startY + EmiLayoutConstants.SLOT_SIZE);
 
         // Output
-        widgets.addSlot(outputs.getFirst(), gridStartX + gridSize + 32, startY + slotSize - 4).large(true).recipeContext(this);
+        widgets.addSlot(outputs.getFirst(), gridStartX + gridSize + 32, startY + EmiLayoutConstants.SLOT_SIZE - 4).large(true).recipeContext(this);
     }
 }

@@ -22,8 +22,6 @@ import java.util.List;
  */
 public abstract class AbstractAlloySmeltingEmiRecipe<T extends Recipe<?>> implements EmiRecipe {
     
-    protected static final int SLOT_SIZE = 18;
-    protected static final int ARROW_WIDTH = 24;
     protected static final int OFFSET_X = 12;
     protected static final int OFFSET_Y = 6;
     
@@ -75,14 +73,14 @@ public abstract class AbstractAlloySmeltingEmiRecipe<T extends Recipe<?>> implem
 
     @Override
     public int getDisplayWidth() {
-        int gridWidth = getGridColumns() * SLOT_SIZE;
+        int gridWidth = getGridColumns() * EmiLayoutConstants.SLOT_SIZE;
         // Grid + gap + arrow + gap + large slot + padding
-        return OFFSET_X * 2 + gridWidth + 6 + ARROW_WIDTH + 4 + 26;
+        return OFFSET_X * 2 + gridWidth + 6 + EmiLayoutConstants.ARROW_WIDTH + EmiLayoutConstants.PAD + EmiLayoutConstants.LARGE_SLOT_SIZE;
     }
 
     @Override
     public int getDisplayHeight() {
-        int gridHeight = getGridColumns() * SLOT_SIZE;
+        int gridHeight = getGridColumns() * EmiLayoutConstants.SLOT_SIZE;
         return Math.max(gridHeight + OFFSET_Y * 2, 50);
     }
 
@@ -91,15 +89,15 @@ public abstract class AbstractAlloySmeltingEmiRecipe<T extends Recipe<?>> implem
         int gridX = OFFSET_X;
         int gridY = OFFSET_Y;
         int gridCols = getGridColumns();
-        int gridSize = gridCols * SLOT_SIZE;
+        int gridSize = gridCols * EmiLayoutConstants.SLOT_SIZE;
         
         // Input grid
         int inputCount = inputs.size();
         for (int row = 0; row < gridCols; row++) {
             for (int col = 0; col < gridCols; col++) {
                 int index = row * gridCols + col;
-                int x = gridX + col * SLOT_SIZE;
-                int y = gridY + row * SLOT_SIZE;
+                int x = gridX + col * EmiLayoutConstants.SLOT_SIZE;
+                int y = gridY + row * EmiLayoutConstants.SLOT_SIZE;
                 
                 if (index < inputCount) {
                     widgets.addSlot(inputs.get(index), x, y);
@@ -111,19 +109,19 @@ public abstract class AbstractAlloySmeltingEmiRecipe<T extends Recipe<?>> implem
         
         // Arrow (centered vertically with grid)
         int arrowX = gridX + gridSize + 6;
-        int arrowY = gridY + (gridSize - 17) / 2 - 8; // 17 = arrow height, offset up a bit
+        int arrowY = gridY + (gridSize - EmiLayoutConstants.ARROW_HEIGHT) / 2 - 8;
         widgets.addTexture(EmiTexture.EMPTY_ARROW, arrowX, arrowY);
         widgets.addFillingArrow(arrowX, arrowY, getCookingTime() * 50);
         
         // Fire directly under arrow
-        int fireX = arrowX + 5;
-        int fireY = arrowY + 18;
+        int fireX = arrowX + (EmiLayoutConstants.ARROW_WIDTH - EmiLayoutConstants.FIRE_WIDTH) / 2; // Centered under arrow
+        int fireY = arrowY + EmiLayoutConstants.ARROW_HEIGHT + 1;
         widgets.addTexture(EmiTexture.EMPTY_FLAME, fireX, fireY);
         widgets.addAnimatedTexture(EmiTexture.FULL_FLAME, fireX, fireY, 4000, false, true, true);
         
         // Output (large slot)
-        int outputX = arrowX + ARROW_WIDTH + 4;
-        int outputY = gridY + (gridSize - 26) / 2 - 4; // 26 = large slot height
+        int outputX = arrowX + EmiLayoutConstants.ARROW_WIDTH + EmiLayoutConstants.PAD;
+        int outputY = gridY + (gridSize - EmiLayoutConstants.LARGE_SLOT_SIZE) / 2 - 4;
         widgets.addSlot(outputs.getFirst(), outputX, outputY).large(true).recipeContext(this);
         
         // XP text under output

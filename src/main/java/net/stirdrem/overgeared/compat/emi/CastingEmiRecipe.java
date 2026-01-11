@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class CastingEmiRecipe implements EmiRecipe {
 
-    private static final int SLOT_SIZE = 18;
+
 
     private final ResourceLocation id;
     private final CastingRecipe recipe;
@@ -193,23 +193,23 @@ public class CastingEmiRecipe implements EmiRecipe {
 
         // Cast slot (bottom-left) - shows empty tool cast
         int castX = offsetX;
-        int castY = offsetY + SLOT_SIZE + 2;
+        int castY = offsetY + EmiLayoutConstants.SLOT_SIZE + 2;
         widgets.addSlot(emiCastStack, castX, castY);
 
         // Arrow (middle, vertically centered)
-        int arrowX = offsetX + SLOT_SIZE + 8;
+        int arrowX = offsetX + EmiLayoutConstants.SLOT_SIZE + 8;
         int arrowY = offsetY;
         widgets.addTexture(EmiTexture.EMPTY_ARROW, arrowX, arrowY);
         widgets.addFillingArrow(arrowX, arrowY, recipe.getCookingTime() * 50);
 
         // Fire (below arrow)
-        int fireX = arrowX + 5;
-        int fireY = arrowY + 18;
+        int fireX = arrowX + (EmiLayoutConstants.ARROW_WIDTH - EmiLayoutConstants.FIRE_WIDTH) / 2;
+        int fireY = arrowY + EmiLayoutConstants.ARROW_HEIGHT + 1;
         widgets.addTexture(EmiTexture.EMPTY_FLAME, fireX, fireY);
         widgets.addAnimatedTexture(EmiTexture.FULL_FLAME, fireX, fireY, 4000, false, true, true);
 
         // Output (large slot, right side)
-        int outputX = arrowX + 28;
+        int outputX = arrowX + EmiLayoutConstants.ARROW_WIDTH + EmiLayoutConstants.PAD;
         int outputY = offsetY;
         widgets.addSlot(outputs.getFirst(), outputX, outputY).large(true).recipeContext(this);
 
