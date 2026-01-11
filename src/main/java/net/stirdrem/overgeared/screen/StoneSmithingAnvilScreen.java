@@ -10,7 +10,7 @@ import net.stirdrem.overgeared.OvergearedMod;
 
 public class StoneSmithingAnvilScreen extends AbstractSmithingAnvilScreen<StoneSmithingAnvilMenu> {
     private static final ResourceLocation TEXTURE =
-            ResourceLocation.tryBuild(OvergearedMod.MOD_ID, "textures/gui/stone_smithing_anvil.png");
+            ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "textures/gui/stone_smithing_anvil.png");
 
     public StoneSmithingAnvilScreen(StoneSmithingAnvilMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

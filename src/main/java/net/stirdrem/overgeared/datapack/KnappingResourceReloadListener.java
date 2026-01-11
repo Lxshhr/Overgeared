@@ -34,11 +34,11 @@ public class KnappingResourceReloadListener extends SimpleJsonResourceReloadList
 
     /* ---------- FALLBACKS ---------- */
     public static final ResourceLocation FALLBACK_TEXTURE =
-            ResourceLocation.tryBuild("minecraft", "textures/block/stone.png");
+            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/stone.png");
 
     public static final SoundEvent FALLBACK_SOUND =
             SoundEvent.createVariableRangeEvent(
-                    ResourceLocation.tryBuild("minecraft", "block.stone.break")
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "block.stone.break")
             );
 
     public KnappingResourceReloadListener() {

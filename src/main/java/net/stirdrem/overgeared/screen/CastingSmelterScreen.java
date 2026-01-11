@@ -12,7 +12,7 @@ import net.stirdrem.overgeared.screen.CastingSmelterMenu;
 public class CastingSmelterScreen extends AbstractContainerScreen<CastingSmelterMenu> {
 
     private static final ResourceLocation TEXTURE =
-            ResourceLocation.tryBuild(OvergearedMod.MOD_ID, "textures/gui/cast_furnace.png");
+            ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "textures/gui/cast_furnace.png");
 
     public CastingSmelterScreen(CastingSmelterMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);

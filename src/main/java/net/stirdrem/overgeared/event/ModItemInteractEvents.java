@@ -36,8 +36,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -1034,25 +1036,31 @@ public class ModItemInteractEvents {
         event.setCancellationResult(InteractionResult.SUCCESS);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRightClickFletching(PlayerInteractEvent.RightClickBlock event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!ServerConfig.ENABLE_FLETCHING_RECIPES.get()) return;
+
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
-        if (!ServerConfig.ENABLE_FLETCHING_RECIPES.get()) return;
-        // Only respond to main-hand to avoid double-open with offhand
-        if (event.getHand() != InteractionHand.MAIN_HAND) return;
-
         BlockState state = level.getBlockState(pos);
+
         if (!state.is(Blocks.FLETCHING_TABLE)) return;
 
+        // Only respond to main hand
+        if (event.getHand() != InteractionHand.MAIN_HAND) return;
+
+        // Cancel client prediction (prevents block placing sound)
         if (level.isClientSide) {
+            event.setUseBlock(TriState.FALSE);
+            event.setUseItem(TriState.FALSE);
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
             return;
         }
 
-        // Server: open our custom menu via a SimpleMenuProvider (vanilla table has no BE)
+        // Server side
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
         SimpleMenuProvider provider = new SimpleMenuProvider(
                 (windowId, playerInv, p) ->
                         new FletchingStationMenu(windowId, playerInv, ContainerLevelAccess.create(level, pos)),
@@ -1060,9 +1068,13 @@ public class ModItemInteractEvents {
         );
 
         player.openMenu(provider, pos);
-        event.setCancellationResult(InteractionResult.sidedSuccess(false));
+
+        event.setUseBlock(TriState.FALSE);
+        event.setUseItem(TriState.FALSE);
+        event.setCancellationResult(InteractionResult.SUCCESS);
         event.setCanceled(true);
     }
+
 
     @SubscribeEvent
     public static void onUsingKnappable(PlayerInteractEvent.RightClickItem event) {

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintWorkbenchMenu> {
     private static final ResourceLocation TEXTURE =
-            ResourceLocation.tryBuild(OvergearedMod.MOD_ID, "textures/gui/blueprint_workbench.png");
+            ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "textures/gui/blueprint_workbench.png");
 
     private final List<ToolType> toolTypes;
     private int selectedIndex = 0;
@@ -150,7 +150,7 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        this.renderTransparentBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
     }

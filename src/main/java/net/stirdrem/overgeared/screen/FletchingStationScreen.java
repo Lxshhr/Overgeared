@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.stirdrem.overgeared.OvergearedMod;
 
 public class FletchingStationScreen extends AbstractContainerScreen<FletchingStationMenu> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.tryBuild(OvergearedMod.MOD_ID, "textures/gui/fletching_table.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "textures/gui/fletching_table.png");
 
     public FletchingStationScreen(FletchingStationMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

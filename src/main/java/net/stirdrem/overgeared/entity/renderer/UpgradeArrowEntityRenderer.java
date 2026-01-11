@@ -15,6 +15,6 @@ public class UpgradeArrowEntityRenderer extends ArrowRenderer<UpgradeArrowEntity
     public ResourceLocation getTextureLocation(UpgradeArrowEntity entity) {
         ArrowTier tier = entity.getArrowTier();
         String tierName = tier.getSerializedName(); // e.g., "golden", "iron", etc.
-        return ResourceLocation.tryBuild(OvergearedMod.MOD_ID, "textures/entity/projectiles/arrows/" + tierName + ".png");
+        return ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "textures/entity/projectiles/arrows/" + tierName + ".png");
     }
 }

@@ -12,6 +12,6 @@ public class LingeringArrowEntityRenderer extends ArrowRenderer<LingeringArrowEn
     }
 
     public ResourceLocation getTextureLocation(LingeringArrowEntity entity) {
-        return ResourceLocation.tryBuild(OvergearedMod.MOD_ID, "textures/entity/projectiles/arrows/flint.png");
+        return ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "textures/entity/projectiles/arrows/flint.png");
     }
 }

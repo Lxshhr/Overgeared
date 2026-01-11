@@ -101,7 +101,7 @@ public class KnappingEmiRecipe implements EmiRecipe {
     }
 
     private ResourceLocation resolveUnchippedTexture(RockKnappingRecipe recipe) {
-        ItemStack[] stacks = recipe.getIngredient().getItems();
+        ItemStack[] stacks = recipe.ingredient().getItems();
 
         for (ItemStack stack : stacks) {
             ResourceLocation tex = KnappingResourceReloadListener.getTexture(stack);
