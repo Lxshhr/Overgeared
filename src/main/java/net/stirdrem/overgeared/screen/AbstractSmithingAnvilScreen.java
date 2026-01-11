@@ -48,7 +48,6 @@ public abstract class AbstractSmithingAnvilScreen<T extends AbstractSmithingAnvi
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, delta);
         super.render(guiGraphics, mouseX, mouseY, delta);
         for (var widget : this.renderables) {
             if (widget instanceof TooltipButton button && button.isHovered()) {
