@@ -28,10 +28,9 @@ import java.util.Map;
 /**
  * EMI recipe display for Casting recipes.
  * Layout: [Material] [Arrow] [Output]
- *         [Cast]     [Fire]  [XP]
+ * [Cast]     [Fire]  [XP]
  */
 public class CastingEmiRecipe implements EmiRecipe {
-
 
 
     private final ResourceLocation id;
@@ -39,7 +38,7 @@ public class CastingEmiRecipe implements EmiRecipe {
     private final List<EmiIngredient> inputs;
     private final List<EmiStack> outputs;
     private final EmiStack emiCastStack;
-    
+
     // Store material requirements for display-time resolution
     private final Map<String, Integer> requiredMaterials;
 
@@ -82,39 +81,39 @@ public class CastingEmiRecipe implements EmiRecipe {
         cast.set(ModComponents.CAST_DATA.get(), castData);
         return EmiStack.of(cast);
     }
-    
+
     /**
      * Builds material stacks at display time using config-based material values.
      * This allows the values to be resolved after tags and config are loaded.
      */
     private List<EmiStack> buildMaterialStacks() {
         List<EmiStack> validStacks = new ArrayList<>();
-        
+
         for (Map.Entry<String, Integer> entry : requiredMaterials.entrySet()) {
             String materialId = entry.getKey().toLowerCase();
             int amountNeeded = entry.getValue();
-            
+
             // Try different tag patterns
             String[] tagPatterns = {
-                "c:storage_blocks/" + materialId,
-                "c:ingots/" + materialId,
-                "c:nuggets/" + materialId
+                    "c:storage_blocks/" + materialId,
+                    "c:ingots/" + materialId,
+                    "c:nuggets/" + materialId
             };
-            
+
             for (String tagPath : tagPatterns) {
                 TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(tagPath));
                 Ingredient ingredient = Ingredient.of(tag);
-                
+
                 ItemStack[] items = ingredient.getItems();
                 for (ItemStack stack : items) {
                     // Skip barriers (empty tags) and air
                     if (stack.is(Items.BARRIER) || stack.isEmpty()) {
                         continue;
                     }
-                    
+
                     // Use ConfigHelper to get the actual material value for this item
                     int materialValue = ConfigHelper.getMaterialValue(stack);
-                    
+
                     // If config doesn't have this item, use default based on tag type
                     if (materialValue <= 0) {
                         if (tagPath.contains("storage_blocks")) {
@@ -125,7 +124,7 @@ public class CastingEmiRecipe implements EmiRecipe {
                             materialValue = 1;
                         }
                     }
-                    
+
                     if (materialValue > 0) {
                         int count = (int) Math.ceil((double) amountNeeded / materialValue);
                         ItemStack copy = stack.copy();
@@ -135,7 +134,7 @@ public class CastingEmiRecipe implements EmiRecipe {
                 }
             }
         }
-        
+
         return validStacks;
     }
 
@@ -216,7 +215,7 @@ public class CastingEmiRecipe implements EmiRecipe {
         // XP text (next to fire)
         float xp = recipe.getExperience();
         if (xp > 0) {
-            widgets.addText(Component.literal(xp + " XP"), fireX + 22, fireY + 9, 0xFF808080, false);
+            widgets.addText(Component.literal(xp + " XP"), fireX + 22, fireY + 10, 0xFF808080, false);
         }
     }
 }

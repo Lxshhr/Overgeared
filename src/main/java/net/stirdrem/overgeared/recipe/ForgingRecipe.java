@@ -313,6 +313,10 @@ public class ForgingRecipe implements Recipe<RecipeInput> {
         return width * height;
     }
 
+    public NonNullList<ForgingIngredient> getForgingIngredients() {
+        return ingredients;
+    }
+
     public static class Serializer implements RecipeSerializer<ForgingRecipe> {
         public static final Serializer INSTANCE = new Serializer();
 
@@ -547,7 +551,7 @@ public class ForgingRecipe implements Recipe<RecipeInput> {
             public <T> DataResult<T> encode(ForgingIngredient input, DynamicOps<T> ops, T prefix) {
                 return Ingredient.CODEC.encode(input.ingredient, ops, prefix).flatMap(encoded -> {
                     if (!input.requiresHeated && !input.transferNBT) return DataResult.success(encoded);
-                    
+
                     DataResult<T> result = DataResult.success(encoded);
                     if (input.requiresHeated) {
                         result = result.flatMap(m -> ops.mergeToMap(m, ops.createString("requires_heated"), ops.createBoolean(true)));

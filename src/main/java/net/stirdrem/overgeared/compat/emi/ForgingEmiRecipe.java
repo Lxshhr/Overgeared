@@ -6,9 +6,11 @@ import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.stirdrem.overgeared.AnvilTier;
 import net.stirdrem.overgeared.components.BlueprintData;
@@ -17,6 +19,7 @@ import net.stirdrem.overgeared.item.ModItems;
 import net.stirdrem.overgeared.recipe.ForgingRecipe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +32,7 @@ public class ForgingEmiRecipe implements EmiRecipe {
     private final ForgingRecipe recipe;
     private final List<EmiIngredient> inputs;
     private final List<EmiStack> outputs;
+    private final List<EmiStack> outputFailure;
     private final List<EmiStack> blueprintStacks;
 
     public ForgingEmiRecipe(RecipeHolder<ForgingRecipe> holder) {
@@ -41,6 +45,9 @@ public class ForgingEmiRecipe implements EmiRecipe {
                 .toList();
 
         this.outputs = List.of(EmiStack.of(recipe.getResultItem(null)));
+        ItemStack failureStack = recipe.getFailedResultItem(null).copy();
+        failureStack.set(ModComponents.FAILED_RESULT, true);
+        this.outputFailure = List.of(EmiStack.of(failureStack));
 
         // Create blueprint stacks for recipes that support blueprints
         this.blueprintStacks = createBlueprintStacks();
@@ -60,8 +67,8 @@ public class ForgingEmiRecipe implements EmiRecipe {
             ItemStack stack = new ItemStack(ModItems.BLUEPRINT.get());
             // Use BlueprintData with builder pattern
             BlueprintData data = BlueprintData.createDefault()
-                            .withToolType(type)
-                            .withRequired(recipe.requiresBlueprint());
+                    .withToolType(type)
+                    .withRequired(recipe.requiresBlueprint());
             stack.set(ModComponents.BLUEPRINT_DATA, data);
             stacks.add(EmiStack.of(stack));
         }
@@ -119,6 +126,9 @@ public class ForgingEmiRecipe implements EmiRecipe {
         int recipeWidth = recipe.width;
         int recipeHeight = recipe.height;
 
+        NonNullList<ForgingRecipe.ForgingIngredient> forgingIngredients =
+                recipe.getForgingIngredients();
+
         // Create all 9 slots of the 3x3 grid
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
@@ -127,23 +137,49 @@ public class ForgingEmiRecipe implements EmiRecipe {
 
                 int recipeIndex = row * recipeWidth + col;
 
-                // Check if this grid position has an ingredient in the recipe
-                if (col < recipeWidth && row < recipeHeight && recipeIndex < inputs.size()) {
-                    widgets.addSlot(inputs.get(recipeIndex), x, y);
+                if (col < recipeWidth && row < recipeHeight && recipeIndex < forgingIngredients.size()) {
+
+                    ForgingRecipe.ForgingIngredient forgingIngredient =
+                            forgingIngredients.get(recipeIndex);
+
+                    Ingredient ingredient = forgingIngredient.ingredient();
+
+                    EmiIngredient emiIngredient;
+
+                    if (forgingIngredient.requiresHeated()) {
+                        List<EmiStack> stacks = Arrays.stream(ingredient.getItems())
+                                .map(stack -> {
+                                    ItemStack copy = stack.copy();
+                                    copy.set(ModComponents.HEATED_COMPONENT, true);
+                                    return EmiStack.of(copy);
+                                })
+                                .toList();
+
+                        emiIngredient = EmiIngredient.of(stacks);
+                    } else {
+                        emiIngredient = EmiIngredient.of(ingredient);
+                    }
+
+                    widgets.addSlot(emiIngredient, x, y);
                 } else {
                     widgets.addSlot(EmiStack.EMPTY, x, y);
                 }
             }
         }
 
+
         // Arrow texture
         widgets.addTexture(EmiTexture.EMPTY_ARROW, X_OFFSET + 82, 24);
 
         // Output slot
         int outputX = X_OFFSET + 110;
-        int outputY = 24;
-        widgets.addSlot(outputs.get(0), outputX, outputY).large(true).recipeContext(this);
-
+        int outputY = 20;
+        if (outputFailure.getFirst().isEmpty())
+            widgets.addSlot(outputs.getFirst(), outputX, outputY).large(true).recipeContext(this);
+        else {
+            widgets.addSlot(outputs.getFirst(), outputX, outputY + 4 - 9).large(false).recipeContext(this);
+            widgets.addSlot(outputFailure.getFirst(), outputX, outputY + 4 + 9).large(false).recipeContext(this);
+        }
         // Draw "Hits: X" text (top right, above arrow)
         String hitsText = Component.translatable("tooltip.overgeared.recipe.hits", recipe.getRemainingHits()).getString();
         widgets.addText(Component.literal(hitsText), X_OFFSET + 82, 6, 0xFF808080, false);
