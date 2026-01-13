@@ -7,6 +7,8 @@ import net.stirdrem.overgeared.config.ServerConfig;
 import java.util.function.Supplier;
 
 public enum BlueprintQuality {
+    NONE("none", 0, ChatFormatting.GRAY, () -> null),
+
     POOR("poor", 10, ChatFormatting.RED, () -> ServerConfig.POOR_MAX_USE),
     WELL("well", 15, ChatFormatting.YELLOW, () -> ServerConfig.WELL_MAX_USE),
     EXPERT("expert", 20, ChatFormatting.BLUE, () -> ServerConfig.EXPERT_MAX_USE),
@@ -28,6 +30,11 @@ public enum BlueprintQuality {
     public static int compare(String q1, String q2) {
         BlueprintQuality a = fromString(q1);
         BlueprintQuality b = fromString(q2);
+
+        if (a == NONE && b == NONE) return 0;
+        if (a == NONE) return -1;
+        if (b == NONE) return 1;
+
         return Integer.compare(a.ordinal(), b.ordinal());
     }
 
@@ -38,29 +45,33 @@ public enum BlueprintQuality {
         for (BlueprintQuality q : values()) {
             if (q.id.equalsIgnoreCase(id)) return q;
         }
-        return POOR; // fallback
+        return NONE;
     }
 
     /**
      * Get the next tier of blueprint quality.
      */
     public static BlueprintQuality getNext(BlueprintQuality current) {
+        if (current == NONE) return POOR;
+
         int index = current.ordinal();
         if (index + 1 < values().length) {
             return values()[index + 1];
         }
-        return null; // Already at max
+        return MASTER; // already max
     }
 
     /**
      * Get the previous tier of blueprint quality.
      */
     public static BlueprintQuality getPrevious(BlueprintQuality current) {
+        if (current == NONE) return NONE;
+
         int index = current.ordinal();
-        if (index - 1 >= 0) {
+        if (index - 1 > 0) { // skip NONE
             return values()[index - 1];
         }
-        return null; // Already at lowest
+        return NONE;
     }
 
     public static ChatFormatting getColor(String qualityName) {
@@ -77,10 +88,11 @@ public enum BlueprintQuality {
     }
 
     public int getUse() {
+        if (this == NONE) return 0;
+
         try {
             return configSupplier.get().get();
-        } catch (IllegalStateException e) {
-            // Config not loaded yet, return default
+        } catch (Exception e) {
             return defaultUse;
         }
     }

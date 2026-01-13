@@ -81,8 +81,8 @@ public class BlueprintWanderingTrade implements VillagerTrades.ItemListing {
             case MASTER -> new ItemCost(Items.EMERALD, 128); // 2 stacks
             case PERFECT -> new ItemCost(Items.EMERALD, 64);  // 1 stack
             case EXPERT -> new ItemCost(Items.EMERALD, 32);  // half stack
-            case WELL -> new ItemCost(Items.EMERALD, 16);
             case POOR -> new ItemCost(Items.EMERALD, 8);
+            default -> new ItemCost(Items.EMERALD, 16);
         };
     }
 }

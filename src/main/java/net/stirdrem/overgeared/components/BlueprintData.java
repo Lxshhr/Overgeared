@@ -11,8 +11,7 @@ public record BlueprintData(
         String quality,
         String toolType,
         int uses,
-        int usesToLevel,
-        boolean required
+        int usesToLevel
 ) {
     private static final String DEFAULT_TOOL_TYPE = "sword";
 
@@ -21,8 +20,7 @@ public record BlueprintData(
                     Codec.STRING.optionalFieldOf("quality", BlueprintQuality.POOR.getId()).forGetter(BlueprintData::quality),
                     Codec.STRING.optionalFieldOf("tool_type", DEFAULT_TOOL_TYPE).forGetter(BlueprintData::toolType),
                     Codec.INT.optionalFieldOf("uses", 0).forGetter(BlueprintData::uses),
-                    Codec.INT.optionalFieldOf("uses_to_level", BlueprintQuality.POOR.getUse()).forGetter(BlueprintData::usesToLevel),
-                    Codec.BOOL.optionalFieldOf("required", false).forGetter(BlueprintData::required)
+                    Codec.INT.optionalFieldOf("uses_to_level", BlueprintQuality.POOR.getUse()).forGetter(BlueprintData::usesToLevel)
             ).apply(instance, BlueprintData::new)
     );
 
@@ -31,7 +29,6 @@ public record BlueprintData(
             ByteBufCodecs.STRING_UTF8, BlueprintData::toolType,
             ByteBufCodecs.VAR_INT, BlueprintData::uses,
             ByteBufCodecs.VAR_INT, BlueprintData::usesToLevel,
-            ByteBufCodecs.BOOL, BlueprintData::required,
             BlueprintData::new
     );
 
@@ -40,32 +37,27 @@ public record BlueprintData(
      */
     public static BlueprintData createDefault() {
         return new BlueprintData(
-                BlueprintQuality.POOR.getId(),
+                BlueprintQuality.NONE.getId(),
                 DEFAULT_TOOL_TYPE,
                 0,
-                BlueprintQuality.POOR.getUse(),
-                false
+                BlueprintQuality.NONE.getUse()
         );
     }
 
     public BlueprintData withQuality(String quality) {
-        return new BlueprintData(quality, this.toolType, this.uses, this.usesToLevel, this.required);
+        return new BlueprintData(quality, this.toolType, this.uses, this.usesToLevel);
     }
 
     public BlueprintData withToolType(String toolType) {
-        return new BlueprintData(this.quality, toolType, this.uses, this.usesToLevel, this.required);
+        return new BlueprintData(this.quality, toolType, this.uses, this.usesToLevel);
     }
 
     public BlueprintData withUses(int uses) {
-        return new BlueprintData(this.quality, this.toolType, uses, this.usesToLevel, this.required);
+        return new BlueprintData(this.quality, this.toolType, uses, this.usesToLevel);
     }
 
     public BlueprintData withUsesToLevel(int usesToLevel) {
-        return new BlueprintData(this.quality, this.toolType, this.uses, usesToLevel, this.required);
-    }
-
-    public BlueprintData withRequired(boolean required) {
-        return new BlueprintData(this.quality, this.toolType, this.uses, this.usesToLevel, required);
+        return new BlueprintData(this.quality, this.toolType, this.uses, usesToLevel);
     }
 
     public BlueprintQuality getQualityEnum() {

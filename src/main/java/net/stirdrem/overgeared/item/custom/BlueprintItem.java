@@ -27,30 +27,41 @@ public class BlueprintItem extends Item {
         BlueprintData data = stack.get(ModComponents.BLUEPRINT_DATA);
         if (data == null) return;
 
-        // Show quality
         BlueprintQuality quality = data.getQualityEnum();
-        tooltip.add(Component.translatable("tooltip.overgeared.blueprint.quality")
-                .withStyle(ChatFormatting.GRAY)
-                .append(Component.translatable(quality.getTranslationKey()).withStyle(quality.getColor())));
 
-        if (quality == BlueprintQuality.PERFECT || quality == BlueprintQuality.MASTER) {
-            tooltip.add(Component.translatable("tooltip.overgeared.blueprint.maxlevel")
-                    .withStyle(ChatFormatting.LIGHT_PURPLE));
-        } else {
-            // Show progress
-            tooltip.add(Component.translatable("tooltip.overgeared.blueprint.progress", data.uses(), data.usesToLevel())
-                    .withStyle(ChatFormatting.GRAY));
+        // Only show quality & progress if not NONE
+        if (quality != BlueprintQuality.NONE) {
+            // Show quality
+            tooltip.add(Component.translatable("tooltip.overgeared.blueprint.quality")
+                    .withStyle(ChatFormatting.GRAY)
+                    .append(Component.translatable(quality.getTranslationKey()).withStyle(quality.getColor())));
+
+            if (quality == BlueprintQuality.PERFECT || quality == BlueprintQuality.MASTER) {
+                tooltip.add(Component.translatable("tooltip.overgeared.blueprint.maxlevel")
+                        .withStyle(ChatFormatting.LIGHT_PURPLE));
+            } else {
+                // Show progress
+                tooltip.add(Component.translatable(
+                        "tooltip.overgeared.blueprint.progress",
+                        data.uses(),
+                        data.usesToLevel()
+                ).withStyle(ChatFormatting.GRAY));
+            }
         }
 
-        // Show tool type
+        // Show tool type (always shown)
         ToolType toolType = getToolType(stack);
-        tooltip.add(Component.translatable("tooltip.overgeared.blueprint.tool_type").withStyle(ChatFormatting.GRAY)
+        tooltip.add(Component.translatable("tooltip.overgeared.blueprint.tool_type")
+                .withStyle(ChatFormatting.GRAY)
                 .append(toolType.getDisplayName().withStyle(ChatFormatting.BLUE)));
 
         // Show required status
-        if (data.required()) {
-            tooltip.add(Component.translatable("tooltip.overgeared.blueprint.required")
-                    .withStyle(ChatFormatting.RED));
+        if (stack.has(ModComponents.BLUEPRINT_REQUIRED)) {
+            if (Boolean.TRUE.equals(stack.get(ModComponents.BLUEPRINT_REQUIRED)))
+                tooltip.add(Component.translatable("tooltip.overgeared.blueprint.required")
+                        .withStyle(ChatFormatting.RED));
+            else tooltip.add(Component.translatable("tooltip.overgeared.blueprint.optional")
+                    .withStyle(ChatFormatting.BLUE));
         }
     }
 
@@ -81,13 +92,12 @@ public class BlueprintItem extends Item {
     public static void setDefaultData(ItemStack stack) {
         List<ToolType> types = ToolTypeRegistry.getRegisteredTypesAll();
         String defaultToolType = !types.isEmpty() ? types.getFirst().getId() : "sword";
-        
+
         BlueprintData data = new BlueprintData(
                 BlueprintQuality.POOR.name(),
                 defaultToolType,
                 0,
-                getUsesToNextLevel(BlueprintQuality.POOR),
-                false
+                getUsesToNextLevel(BlueprintQuality.POOR)
         );
         stack.set(ModComponents.BLUEPRINT_DATA, data);
     }
@@ -111,6 +121,7 @@ public class BlueprintItem extends Item {
             case EXPERT -> BlueprintQuality.EXPERT.getUse();
             case PERFECT -> BlueprintQuality.PERFECT.getUse();
             case MASTER -> BlueprintQuality.MASTER.getUse();
+            default -> BlueprintQuality.NONE.getUse();
         };
     }
 }

@@ -67,9 +67,9 @@ public class ForgingEmiRecipe implements EmiRecipe {
             ItemStack stack = new ItemStack(ModItems.BLUEPRINT.get());
             // Use BlueprintData with builder pattern
             BlueprintData data = BlueprintData.createDefault()
-                    .withToolType(type)
-                    .withRequired(recipe.requiresBlueprint());
+                    .withToolType(type);
             stack.set(ModComponents.BLUEPRINT_DATA, data);
+            stack.set(ModComponents.BLUEPRINT_REQUIRED, recipe.requiresBlueprint());
             stacks.add(EmiStack.of(stack));
         }
         return stacks;

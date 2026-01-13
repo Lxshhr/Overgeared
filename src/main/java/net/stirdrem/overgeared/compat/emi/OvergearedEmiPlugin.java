@@ -10,10 +10,8 @@ import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiStack;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.common.Tags;
 
@@ -21,14 +19,8 @@ import net.stirdrem.overgeared.OvergearedMod;
 import net.stirdrem.overgeared.block.ModBlocks;
 import net.stirdrem.overgeared.config.ServerConfig;
 import net.stirdrem.overgeared.item.ModItems;
-import net.stirdrem.overgeared.recipe.ForgingRecipe;
-import net.stirdrem.overgeared.recipe.ModRecipeTypes;
+import net.stirdrem.overgeared.recipe.*;
 import net.stirdrem.overgeared.util.ModTags;
-import net.stirdrem.overgeared.recipe.RockKnappingRecipe;
-import net.stirdrem.overgeared.recipe.AlloySmeltingRecipe;
-import net.stirdrem.overgeared.recipe.NetherAlloySmeltingRecipe;
-import net.stirdrem.overgeared.recipe.FletchingRecipe;
-import net.stirdrem.overgeared.recipe.CastingRecipe;
 
 import java.util.*;
 
@@ -72,7 +64,7 @@ public class OvergearedEmiPlugin implements EmiPlugin {
     ) {
         @Override
         public Component getName() {
-            return Component.translatable("container.overgeared.alloy_smelter");
+            return Component.translatable("gui.overgeared.jei.category.alloy_smelting");
         }
     };
 
@@ -84,7 +76,7 @@ public class OvergearedEmiPlugin implements EmiPlugin {
     ) {
         @Override
         public Component getName() {
-            return Component.translatable("container.overgeared.nether_alloy_smelter");
+            return Component.translatable("gui.overgeared.jei.category.nether_alloy_smelting");
         }
     };
 
@@ -96,7 +88,7 @@ public class OvergearedEmiPlugin implements EmiPlugin {
     ) {
         @Override
         public Component getName() {
-            return Component.translatable("container.overgeared.fletching_table");
+            return Component.translatable("gui.overgeared.jei.category.fletching");
         }
     };
 
@@ -108,7 +100,18 @@ public class OvergearedEmiPlugin implements EmiPlugin {
     ) {
         @Override
         public Component getName() {
-            return Component.translatable("container.overgeared.casting_furnace");
+            return Component.translatable("gui.overgeared.jei.category.casting");
+        }
+    };
+    public static final EmiStack FLINT = EmiStack.of(Items.FLINT);
+    public static final EmiRecipeCategory ROCK_GETTING_CATEGORY = new EmiRecipeCategory(
+            OvergearedMod.loc("flint_knapping"),
+            FLINT,
+            new EmiTexture(OvergearedMod.loc("textures/gui/flint.png"), 0, 0, 16, 16)
+    ) {
+        @Override
+        public Component getName() {
+            return Component.translatable("jei.overgeared.category.flint_knapping");
         }
     };
 
@@ -145,10 +148,12 @@ public class OvergearedEmiPlugin implements EmiPlugin {
         // Register Alloy Smelting
         registry.addCategory(ALLOY_SMELTING_CATEGORY);
         registry.addWorkstation(ALLOY_SMELTING_CATEGORY, ALLOY_WORKSTATION);
-        registry.addWorkstation(ALLOY_SMELTING_CATEGORY, NETHER_ALLOY_WORKSTATION); // Nether alloy smelter can also do basic alloy smelting? Usually yes.
 
         for (RecipeHolder<AlloySmeltingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ALLOY_SMELTING.get())) {
             registry.addRecipe(new AlloySmeltingEmiRecipe(holder));
+        }
+        for (RecipeHolder<ShapedAlloySmeltingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.SHAPED_ALLOY_SMELTING.get())) {
+            registry.addRecipe(new ShapedAlloySmeltingEmiRecipe(holder));
         }
 
         // Register Nether Alloy Smelting
@@ -157,6 +162,9 @@ public class OvergearedEmiPlugin implements EmiPlugin {
 
         for (RecipeHolder<NetherAlloySmeltingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.NETHER_ALLOY_SMELTING.get())) {
             registry.addRecipe(new NetherAlloySmeltingEmiRecipe(holder));
+        }
+        for (RecipeHolder<ShapedNetherAlloySmeltingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.SHAPED_NETHER_ALLOY_SMELTING.get())) {
+            registry.addRecipe(new ShapedNetherAlloySmeltingEmiRecipe(holder));
         }
 
         // Register Fletching
@@ -175,7 +183,11 @@ public class OvergearedEmiPlugin implements EmiPlugin {
             registry.addRecipe(new CastingEmiRecipe(holder));
         }
 
-        registry.addRecipe(new DragonBreathEmiRecipe());
+        if (ServerConfig.ENABLE_DRAGON_BREATH_RECIPE.get())
+            registry.addRecipe(new DragonBreathEmiRecipe());
+
+        if (ServerConfig.GET_ROCK_USING_FLINT.get())
+            registry.addRecipe(new FlintKnappingEmiRecipe());
 
         // Collect and sort all forging recipes
         List<RecipeHolder<ForgingRecipe>> allRecipes = new ArrayList<>(

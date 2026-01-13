@@ -51,7 +51,7 @@ public class DragonBreathEmiRecipe implements EmiRecipe {
 
     @Override
     public ResourceLocation getId() {
-        return ResourceLocation.fromNamespaceAndPath(OvergearedMod.MOD_ID, "brewing/dragon_breath");
+        return OvergearedMod.loc("brewing/dragon_breath");
     }
 
     @Override

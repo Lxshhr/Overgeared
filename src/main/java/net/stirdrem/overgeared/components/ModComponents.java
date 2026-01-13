@@ -74,6 +74,13 @@ public class ModComponents {
                     .networkSynchronized(ByteBufCodecs.BOOL)
                     .build());
 
+    // Marks blueprint as required or not in recipe viewers
+    public static final Supplier<DataComponentType<Boolean>> BLUEPRINT_REQUIRED =
+            COMPONENTS.register("blueprint_required", () -> DataComponentType.<Boolean>builder()
+                    .persistent(Codec.BOOL)
+                    .networkSynchronized(ByteBufCodecs.BOOL)
+                    .build());
+
     // Track when an item was heated (game tick when heated)
     public static final Supplier<DataComponentType<Long>> HEATED_TIME =
             COMPONENTS.register("heated_time", () -> DataComponentType.<Long>builder()
