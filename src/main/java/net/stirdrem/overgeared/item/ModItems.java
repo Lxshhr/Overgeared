@@ -129,22 +129,22 @@ public class ModItems {
             () -> new ShovelItem(ModToolTiers.STEEL, toolProperties(4, -3)));
     
     public static final DeferredItem<Item> STEEL_HELMET = registerItem("steel_helmet",
-            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.HELMET, armorProperties(ArmorItem.Type.HELMET, 26)));
     public static final DeferredItem<Item> STEEL_CHESTPLATE = registerItem("steel_chestplate",
-            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.CHESTPLATE, armorProperties(ArmorItem.Type.CHESTPLATE, 26)));
     public static final DeferredItem<Item> STEEL_LEGGINGS = registerItem("steel_leggings",
-            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.LEGGINGS, armorProperties(ArmorItem.Type.LEGGINGS, 26)));
     public static final DeferredItem<Item> STEEL_BOOTS = registerItem("steel_boots",
-            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.STEEL, ArmorItem.Type.BOOTS, armorProperties(ArmorItem.Type.BOOTS, 26)));
 
     public static final DeferredItem<Item> COPPER_HELMET = registerItem("copper_helmet",
-            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.HELMET, armorProperties(ArmorItem.Type.HELMET, 10)));
     public static final DeferredItem<Item> COPPER_CHESTPLATE = registerItem("copper_chestplate",
-            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.CHESTPLATE, armorProperties(ArmorItem.Type.CHESTPLATE, 10)));
     public static final DeferredItem<Item> COPPER_LEGGINGS = registerItem("copper_leggings",
-            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.LEGGINGS, armorProperties(ArmorItem.Type.LEGGINGS, 10)));
     public static final DeferredItem<Item> COPPER_BOOTS = registerItem("copper_boots",
-            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new ArmorItem(ModArmorMaterials.COPPER, ArmorItem.Type.BOOTS, armorProperties(ArmorItem.Type.BOOTS, 10)));
 
     public static final DeferredItem<Item> COPPER_SWORD = registerItem("copper_sword",
             () -> new SwordItem(ModToolTiers.COPPER, toolProperties(4, -2.4f)));
@@ -186,6 +186,10 @@ public class ModItems {
                         EquipmentSlotGroup.MAINHAND
                 );
         return new Item.Properties().attributes(builder.build());
+    }
+
+    private static Item.Properties armorProperties(ArmorItem.Type type, int durabilityMultiplier) {
+        return new Item.Properties().durability(type.getDurability(durabilityMultiplier));
     }
 
     public static <T extends Item> DeferredItem<T> registerItem(String name, Supplier<T> itemSupplier) {
