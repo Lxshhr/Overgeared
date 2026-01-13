@@ -27,7 +27,7 @@ public class FlintKnappingEmiRecipe implements EmiRecipe {
 
     public FlintKnappingEmiRecipe() {
         this.input = EmiIngredient.of(Ingredient.of(Items.FLINT));
-        this.output = EmiStack.of(new ItemStack(ModItems.ROCK));
+        this.output = EmiStack.of(ModItems.ROCK.get());
     }
 
     @Override
