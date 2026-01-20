@@ -599,7 +599,6 @@ public class ForgingRecipe implements Recipe<RecipeInput> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> void copyComponent(ItemStack target, ItemStack source, DataComponentType<T> type) {
         T value = source.get(type);
         if (value != null) {

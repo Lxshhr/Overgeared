@@ -1,6 +1,5 @@
 package net.stirdrem.overgeared.util;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
