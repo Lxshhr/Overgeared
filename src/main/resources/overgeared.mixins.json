@@ -6,9 +6,10 @@
   "client": [
   ],
   "mixins": [
-    "AbstractContainerMenuMixin",
     "BrewingStandBlockEntityMixin",
+    "ChunkMapAccessor",
     "ItemStackMixin",
+    "ItemStackStackingMixin",
     "PotionItemMixin"
   ],
   "injectors": {
