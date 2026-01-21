@@ -10,7 +10,8 @@
     "ChunkMapAccessor",
     "ItemStackMixin",
     "ItemStackStackingMixin",
-    "PotionItemMixin"
+    "PotionItemMixin",
+    "SlotMixin"
   ],
   "injectors": {
     "defaultRequire": 1
