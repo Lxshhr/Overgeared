@@ -7,12 +7,15 @@ import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.render.EmiTexture;
 
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
 
 import net.stirdrem.overgeared.OvergearedMod;
@@ -92,15 +95,30 @@ public class OvergearedEmiPlugin implements EmiPlugin {
         }
     };
 
-    public static final EmiStack COOLING_WORKSTATION = EmiStack.of(Items.WATER_BUCKET);
+    public static final EmiIngredient COOLING_WORKSTATION = EmiIngredient.of(List.of(
+            EmiStack.of(Fluids.WATER),
+            EmiStack.of(Blocks.WATER_CAULDRON)
+    ));
     public static final EmiRecipeCategory COOLING_CATEGORY = new EmiRecipeCategory(
             OvergearedMod.loc("cooling"),
-            COOLING_WORKSTATION,
+            EmiStack.of(Fluids.WATER),
             new EmiTexture(OvergearedMod.loc("textures/gui/cooling.png"), 0, 0, 16, 16)
     ) {
         @Override
         public Component getName() {
             return Component.translatable("gui.overgeared.jei.category.cooling");
+        }
+    };
+
+    public static final EmiStack GRINDING_WORKSTATION = EmiStack.of(Blocks.GRINDSTONE);
+    public static final EmiRecipeCategory GRINDING_CATEGORY = new EmiRecipeCategory(
+            OvergearedMod.loc("grinding"),
+            GRINDING_WORKSTATION,
+            new EmiTexture(OvergearedMod.loc("textures/gui/grinding.png"), 0, 0, 16, 16)
+    ) {
+        @Override
+        public Component getName() {
+            return Component.translatable("gui.overgeared.jei.category.grinding");
         }
     };
 
@@ -192,6 +210,13 @@ public class OvergearedEmiPlugin implements EmiPlugin {
 
         for (RecipeHolder<CoolingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COOLING_RECIPE.get())) {
             registry.addRecipe(new CoolingEmiRecipe(holder));
+        }
+
+        registry.addCategory(GRINDING_CATEGORY);
+        registry.addWorkstation(GRINDING_CATEGORY, GRINDING_WORKSTATION);
+
+        for (RecipeHolder<GrindingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.GRINDING_RECIPE.get())) {
+            registry.addRecipe(new GrindingEmiRecipe(holder));
         }
 
         // Register Casting

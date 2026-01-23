@@ -7,39 +7,37 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
-import net.stirdrem.overgeared.recipe.CoolingRecipe;
+import net.stirdrem.overgeared.recipe.GrindingRecipe;
+import net.stirdrem.overgeared.util.ModTags;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * EMI recipe display for Cooling recipes.
+ * EMI recipe display for Grinding recipes.
  */
-public class CoolingEmiRecipe implements EmiRecipe {
+public class GrindingEmiRecipe implements EmiRecipe {
 
     private static final int SLOT_SIZE = 18;
 
     private final ResourceLocation id;
-    private final CoolingRecipe recipe;
+    private final GrindingRecipe recipe;
     private final EmiIngredient inputs;
     private final EmiStack outputs;
 
-    public CoolingEmiRecipe(RecipeHolder<CoolingRecipe> holder) {
+    public GrindingEmiRecipe(RecipeHolder<GrindingRecipe> holder) {
         this.id = holder.id();
         this.recipe = holder.value();
 
-        this.inputs = EmiIngredient.of(recipe.getIngredient());
+        this.inputs = EmiIngredient.of(recipe.getInput());
 
         this.outputs = EmiStack.of(recipe.getResultItem(null));
     }
 
     @Override
     public EmiRecipeCategory getCategory() {
-        return OvergearedEmiPlugin.COOLING_CATEGORY;
+        return OvergearedEmiPlugin.GRINDING_CATEGORY;
     }
 
     @Override
@@ -78,8 +76,8 @@ public class CoolingEmiRecipe implements EmiRecipe {
         // Plus icon
         widgets.addTexture(EmiTexture.PLUS, 26, y + 2);
 
-        // Water slot
-        widgets.addSlot(EmiStack.of(Fluids.WATER), 45, y)
+        // Grindstone slot
+        widgets.addSlot(EmiIngredient.of(ModTags.Blocks.GRINDSTONES), 45, y)
                 .drawBack(true);
 
         // Arrow
