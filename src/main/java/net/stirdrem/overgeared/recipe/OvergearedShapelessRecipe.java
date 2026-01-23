@@ -16,11 +16,30 @@ import net.stirdrem.overgeared.config.ServerConfig;
 public class OvergearedShapelessRecipe extends ShapelessRecipe {
 
     private final NonNullList<IngredientWithRemainder> ingredientsWithRemainder;
+    private final ItemStack result;
 
-    public OvergearedShapelessRecipe(String group, CraftingBookCategory category,
-                                     ItemStack result, NonNullList<IngredientWithRemainder> ingredientsWithRemainder) {
-        super(group, category, result, convertToBaseIngredients(ingredientsWithRemainder));
-        this.ingredientsWithRemainder = ingredientsWithRemainder;
+    public OvergearedShapelessRecipe(
+            String group,
+            CraftingBookCategory category,
+            ItemStack result,
+            NonNullList<Ingredient> ingredients,
+            boolean[] remainder,
+            int[] durability
+    ) {
+        super(group, category, result, ingredients);
+
+        this.ingredientsWithRemainder = NonNullList.create();
+        for (int i = 0; i < ingredients.size(); i++) {
+            this.ingredientsWithRemainder.add(
+                    new IngredientWithRemainder(
+                            ingredients.get(i),
+                            i < remainder.length && remainder[i],
+                            i < durability.length ? durability[i] : 0
+                    )
+            );
+        }
+
+        this.result = result;
     }
 
     // Convert our custom ingredients to base Minecraft ingredients for parent class
@@ -74,7 +93,7 @@ public class OvergearedShapelessRecipe extends ShapelessRecipe {
             boolean unquenched = false;
             ForgingQuality foundQuality = null;
             String creator = null;
-            
+
             for (int i = 0; i < input.size(); i++) {
                 ItemStack ingredient = input.getItem(i);
 
@@ -114,11 +133,11 @@ public class OvergearedShapelessRecipe extends ShapelessRecipe {
                 foundQuality = ForgingQuality.NONE;
             }
             result.set(ModComponents.FORGING_QUALITY, foundQuality);
-            
+
             if (creator != null) {
                 result.set(ModComponents.CREATOR, creator);
             }
-            
+
             return result;
         }
 
@@ -127,34 +146,34 @@ public class OvergearedShapelessRecipe extends ShapelessRecipe {
         boolean isPolished = true;
         boolean unquenched = false;
         String creator = null;
-        
+
         for (int i = 0; i < input.size(); i++) {
             ItemStack ingredient = input.getItem(i);
-            
+
             // Get forging quality from component
             ForgingQuality quality = ingredient.get(ModComponents.FORGING_QUALITY);
             if (quality != null && quality != ForgingQuality.NONE) {
                 foundQuality = quality;
             }
-            
+
             // Check if polished
             Boolean polished = ingredient.get(ModComponents.POLISHED);
             if (polished != null && !polished) {
                 isPolished = false;
             }
-            
+
             // Check if heated (unquenched)
             if (ingredient.getOrDefault(ModComponents.HEATED_COMPONENT, false)) {
                 unquenched = true;
             }
-            
+
             // Get creator
             String itemCreator = ingredient.get(ModComponents.CREATOR);
             if (itemCreator != null) {
                 creator = itemCreator;
             }
         }
-        
+
         if (foundQuality == null || foundQuality == ForgingQuality.NONE) {
             // If no quality found
             if (!isPolished || unquenched) {
@@ -210,99 +229,136 @@ public class OvergearedShapelessRecipe extends ShapelessRecipe {
         }
 
         public ItemStack getRemainder(ItemStack original) {
-            if (!remainder) {
-                return ItemStack.EMPTY;
-            }
+            if (!remainder) return ItemStack.EMPTY;
 
-            ItemStack remainderStack = original.copy();
-            remainderStack.setCount(1);
+            ItemStack stack = original.copy();
+            stack.setCount(1);
 
-            // Handle durability decrease for damageable items
-            if (durabilityDecrease > 0 && remainderStack.isDamageableItem()) {
-                int newDamage = remainderStack.getDamageValue() + durabilityDecrease;
-                if (newDamage >= remainderStack.getMaxDamage()) {
-                    return ItemStack.EMPTY; // Item breaks
+            if (durabilityDecrease > 0 && stack.isDamageableItem()) {
+                int newDamage = stack.getDamageValue() + durabilityDecrease;
+                if (newDamage >= stack.getMaxDamage()) {
+                    return ItemStack.EMPTY;
                 }
-                remainderStack.setDamageValue(newDamage);
+                stack.setDamageValue(newDamage);
             }
 
-            return remainderStack;
+            return stack;
         }
-
-        // Codec for serialization
-        public static final Codec<IngredientWithRemainder> CODEC = RecordCodecBuilder.create(instance ->
-                instance.group(
-                        Ingredient.CODEC.fieldOf("ingredient").forGetter(IngredientWithRemainder::getIngredient),
-                        Codec.BOOL.optionalFieldOf("remainder", false).forGetter(IngredientWithRemainder::hasRemainder),
-                        Codec.INT.optionalFieldOf("durability_decrease", 0).forGetter(IngredientWithRemainder::getDurabilityDecrease)
-                ).apply(instance, IngredientWithRemainder::new)
-        );
-
-        // StreamCodec for network serialization
-        public static final StreamCodec<RegistryFriendlyByteBuf, IngredientWithRemainder> STREAM_CODEC =
-                StreamCodec.composite(
-                        Ingredient.CONTENTS_STREAM_CODEC,
-                        IngredientWithRemainder::getIngredient,
-                        net.minecraft.network.codec.ByteBufCodecs.BOOL,
-                        IngredientWithRemainder::hasRemainder,
-                        net.minecraft.network.codec.ByteBufCodecs.VAR_INT,
-                        IngredientWithRemainder::getDurabilityDecrease,
-                        IngredientWithRemainder::new
-                );
     }
 
-    public static class Serializer implements RecipeSerializer<OvergearedShapelessRecipe> {
-        public static final Serializer INSTANCE = new Serializer();
 
-        // Codec for list of IngredientWithRemainder
-        private static final Codec<NonNullList<IngredientWithRemainder>> INGREDIENTS_CODEC =
-                IngredientWithRemainder.CODEC.listOf().xmap(
-                        list -> {
-                            NonNullList<IngredientWithRemainder> nonNullList = NonNullList.create();
-                            nonNullList.addAll(list);
-                            return nonNullList;
-                        },
-                        list -> list
-                );
+    public static class Serializer implements RecipeSerializer<OvergearedShapelessRecipe> {
 
         @Override
         public MapCodec<OvergearedShapelessRecipe> codec() {
             return RecordCodecBuilder.mapCodec(instance -> instance.group(
-                    Codec.STRING.optionalFieldOf("group", "").forGetter(r -> r.getGroup()),
-                    CraftingBookCategory.CODEC.optionalFieldOf("category", CraftingBookCategory.MISC)
-                            .forGetter(r -> r.category()),
-                    ItemStack.CODEC.fieldOf("result").forGetter(r -> r.getResultItem(null)),
-                    INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(r -> r.ingredientsWithRemainder)
-            ).apply(instance, OvergearedShapelessRecipe::new));
+                    Codec.STRING.optionalFieldOf("group", "")
+                            .forGetter(OvergearedShapelessRecipe::getGroup),
+                    CraftingBookCategory.CODEC
+                            .optionalFieldOf("category", CraftingBookCategory.MISC)
+                            .forGetter(OvergearedShapelessRecipe::category),
+                    ItemStack.CODEC
+                            .fieldOf("result")
+                            .forGetter(r -> r.result),
+                    Ingredient.CODEC_NONEMPTY
+                            .listOf()
+                            .xmap(
+                                    list -> {
+                                        NonNullList<Ingredient> nn = NonNullList.create();
+                                        nn.addAll(list);
+                                        return nn;
+                                    },
+                                    list -> list
+                            )
+                            .fieldOf("ingredients")
+                            .forGetter(r -> r.getIngredients()),
+                    Codec.BOOL.listOf()
+                            .optionalFieldOf("remainder", java.util.List.of())
+                            .forGetter(r -> r.ingredientsWithRemainder
+                                    .stream()
+                                    .map(IngredientWithRemainder::hasRemainder)
+                                    .toList()),
+                    Codec.INT.listOf()
+                            .optionalFieldOf("durability_decrease", java.util.List.of())
+                            .forGetter(r -> r.ingredientsWithRemainder
+                                    .stream()
+                                    .map(IngredientWithRemainder::getDurabilityDecrease)
+                                    .toList())
+            ).apply(instance, (group, category, result, ingredients, remainder, durability) -> {
+
+                boolean[] rem = new boolean[ingredients.size()];
+                int[] dur = new int[ingredients.size()];
+
+                for (int i = 0; i < ingredients.size(); i++) {
+                    rem[i] = i < remainder.size() && remainder.get(i);
+                    dur[i] = i < durability.size() ? durability.get(i) : 0;
+                }
+
+                return new OvergearedShapelessRecipe(
+                        group,
+                        category,
+                        result,
+                        ingredients,
+                        rem,
+                        dur
+                );
+            }));
         }
 
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, OvergearedShapelessRecipe> streamCodec() {
             return new StreamCodec<>() {
                 @Override
-                public OvergearedShapelessRecipe decode(RegistryFriendlyByteBuf buffer) {
-                    String group = buffer.readUtf();
-                    CraftingBookCategory category = buffer.readEnum(CraftingBookCategory.class);
-                    ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+                public OvergearedShapelessRecipe decode(RegistryFriendlyByteBuf buf) {
+                    String group = buf.readUtf();
+                    CraftingBookCategory category = buf.readEnum(CraftingBookCategory.class);
+                    ItemStack result = ItemStack.STREAM_CODEC.decode(buf);
 
-                    int ingredientCount = buffer.readVarInt();
-                    NonNullList<IngredientWithRemainder> ingredients = NonNullList.create();
+                    int ingredientCount = buf.readVarInt();
+                    NonNullList<Ingredient> ingredients = NonNullList.create();
                     for (int i = 0; i < ingredientCount; i++) {
-                        ingredients.add(IngredientWithRemainder.STREAM_CODEC.decode(buffer));
+                        ingredients.add(Ingredient.CONTENTS_STREAM_CODEC.decode(buf));
                     }
 
-                    return new OvergearedShapelessRecipe(group, category, result, ingredients);
+                    boolean[] remainder = new boolean[ingredientCount];
+                    for (int i = 0; i < ingredientCount; i++) {
+                        remainder[i] = buf.readBoolean();
+                    }
+
+                    int[] durability = new int[ingredientCount];
+                    for (int i = 0; i < ingredientCount; i++) {
+                        durability[i] = buf.readVarInt();
+                    }
+
+                    return new OvergearedShapelessRecipe(
+                            group,
+                            category,
+                            result,
+                            ingredients,
+                            remainder,
+                            durability
+                    );
                 }
 
                 @Override
-                public void encode(RegistryFriendlyByteBuf buffer, OvergearedShapelessRecipe recipe) {
-                    buffer.writeUtf(recipe.getGroup());
-                    buffer.writeEnum(recipe.category());
-                    ItemStack.STREAM_CODEC.encode(buffer, recipe.getResultItem(null));
+                public void encode(RegistryFriendlyByteBuf buf, OvergearedShapelessRecipe recipe) {
+                    buf.writeUtf(recipe.getGroup());
+                    buf.writeEnum(recipe.category());
+                    ItemStack.STREAM_CODEC.encode(buf, recipe.result);
 
-                    buffer.writeVarInt(recipe.ingredientsWithRemainder.size());
-                    for (IngredientWithRemainder ingredient : recipe.ingredientsWithRemainder) {
-                        IngredientWithRemainder.STREAM_CODEC.encode(buffer, ingredient);
+                    int size = recipe.getIngredients().size();
+                    buf.writeVarInt(size);
+
+                    for (Ingredient ingredient : recipe.getIngredients()) {
+                        Ingredient.CONTENTS_STREAM_CODEC.encode(buf, ingredient);
+                    }
+
+                    for (IngredientWithRemainder iwr : recipe.ingredientsWithRemainder) {
+                        buf.writeBoolean(iwr.hasRemainder());
+                    }
+
+                    for (IngredientWithRemainder iwr : recipe.ingredientsWithRemainder) {
+                        buf.writeVarInt(iwr.getDurabilityDecrease());
                     }
                 }
             };

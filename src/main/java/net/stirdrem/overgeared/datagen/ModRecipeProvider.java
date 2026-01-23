@@ -24,7 +24,6 @@ import net.stirdrem.overgeared.util.ModTags;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
     private static final List<ItemLike> STEEL_SMELTABLES = List.of(
@@ -211,152 +210,152 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(ModItems.EMPTY_BLUEPRINT.get()), has(ModItems.EMPTY_BLUEPRINT.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_AXE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_AXE)
                 .requires(ModItems.STONE_AXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STONE_AXE_HEAD.get()), has(ModItems.STONE_AXE_HEAD.get()))
                 .save(pWriter);
 
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_PICKAXE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_PICKAXE)
                 .requires(ModItems.STONE_PICKAXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STONE_PICKAXE_HEAD.get()), has(ModItems.STONE_PICKAXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_SHOVEL)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_SHOVEL)
                 .requires(ModItems.STONE_SHOVEL_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STONE_SHOVEL_HEAD.get()), has(ModItems.STONE_SHOVEL_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_HOE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_HOE)
                 .requires(ModItems.STONE_HOE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STONE_HOE_HEAD.get()), has(ModItems.STONE_HOE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_SWORD)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.STONE_SWORD)
                 .requires(ModItems.STONE_SWORD_BLADE.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STONE_SWORD_BLADE.get()), has(ModItems.STONE_SWORD_BLADE.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_AXE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_AXE)
                 .requires(ModItems.IRON_AXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.IRON_AXE_HEAD.get()), has(ModItems.IRON_AXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_PICKAXE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_PICKAXE)
                 .requires(ModItems.IRON_PICKAXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.IRON_PICKAXE_HEAD.get()), has(ModItems.IRON_PICKAXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_SHOVEL)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_SHOVEL)
                 .requires(ModItems.IRON_SHOVEL_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.IRON_SHOVEL_HEAD.get()), has(ModItems.IRON_SHOVEL_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_HOE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_HOE)
                 .requires(ModItems.IRON_HOE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.IRON_HOE_HEAD.get()), has(ModItems.IRON_HOE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_SWORD)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.IRON_SWORD)
                 .requires(ModItems.IRON_SWORD_BLADE.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.IRON_SWORD_BLADE.get()), has(ModItems.IRON_SWORD_BLADE.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_AXE.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_AXE.get())
                 .requires(ModItems.STEEL_AXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STEEL_AXE_HEAD.get()), has(ModItems.STEEL_AXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_PICKAXE.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_PICKAXE.get())
                 .requires(ModItems.STEEL_PICKAXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STEEL_PICKAXE_HEAD.get()), has(ModItems.STEEL_PICKAXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_SHOVEL.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_SHOVEL.get())
                 .requires(ModItems.STEEL_SHOVEL_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STEEL_SHOVEL_HEAD.get()), has(ModItems.STEEL_SHOVEL_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_HOE.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_HOE.get())
                 .requires(ModItems.STEEL_HOE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STEEL_HOE_HEAD.get()), has(ModItems.STEEL_HOE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_SWORD.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.STEEL_SWORD.get())
                 .requires(ModItems.STEEL_SWORD_BLADE.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.STEEL_SWORD_BLADE.get()), has(ModItems.STEEL_SWORD_BLADE.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_AXE.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_AXE.get())
                 .requires(ModItems.COPPER_AXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.COPPER_AXE_HEAD.get()), has(ModItems.COPPER_AXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_PICKAXE.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_PICKAXE.get())
                 .requires(ModItems.COPPER_PICKAXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.COPPER_PICKAXE_HEAD.get()), has(ModItems.COPPER_PICKAXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_SHOVEL.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_SHOVEL.get())
                 .requires(ModItems.COPPER_SHOVEL_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.COPPER_SHOVEL_HEAD.get()), has(ModItems.COPPER_SHOVEL_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_HOE.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_HOE.get())
                 .requires(ModItems.COPPER_HOE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.COPPER_HOE_HEAD.get()), has(ModItems.COPPER_HOE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_SWORD.get())
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, ModItems.COPPER_SWORD.get())
                 .requires(ModItems.COPPER_SWORD_BLADE.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.COPPER_SWORD_BLADE.get()), has(ModItems.COPPER_SWORD_BLADE.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_AXE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_AXE)
                 .requires(ModItems.GOLDEN_AXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.GOLDEN_AXE_HEAD.get()), has(ModItems.GOLDEN_AXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_PICKAXE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_PICKAXE)
                 .requires(ModItems.GOLDEN_PICKAXE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.GOLDEN_PICKAXE_HEAD.get()), has(ModItems.GOLDEN_PICKAXE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_SHOVEL)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_SHOVEL)
                 .requires(ModItems.GOLDEN_SHOVEL_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.GOLDEN_SHOVEL_HEAD.get()), has(ModItems.GOLDEN_SHOVEL_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_HOE)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_HOE)
                 .requires(ModItems.GOLDEN_HOE_HEAD.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.GOLDEN_HOE_HEAD.get()), has(ModItems.GOLDEN_HOE_HEAD.get()))
                 .save(pWriter);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_SWORD)
+        OvergearedShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, Items.GOLDEN_SWORD)
                 .requires(ModItems.GOLDEN_SWORD_BLADE.get())
                 .requires(Items.STICK)
                 .unlockedBy(getHasName(ModItems.GOLDEN_SWORD_BLADE.get()), has(ModItems.GOLDEN_SWORD_BLADE.get()))
