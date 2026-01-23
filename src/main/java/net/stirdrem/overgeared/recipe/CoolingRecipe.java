@@ -3,11 +3,14 @@ package net.stirdrem.overgeared.recipe;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 public class CoolingRecipe implements Recipe<SingleRecipeInput> {
     private final Ingredient ingredient;
@@ -21,6 +24,15 @@ public class CoolingRecipe implements Recipe<SingleRecipeInput> {
     @Override
     public boolean matches(SingleRecipeInput input, Level level) {
         return ingredient.test(input.getItem(0));
+    }
+
+    public Ingredient getIngredient() {
+        return ingredient;
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(ingredient);
     }
 
     @Override

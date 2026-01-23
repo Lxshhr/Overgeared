@@ -92,6 +92,18 @@ public class OvergearedEmiPlugin implements EmiPlugin {
         }
     };
 
+    public static final EmiStack COOLING_WORKSTATION = EmiStack.of(Items.WATER_BUCKET);
+    public static final EmiRecipeCategory COOLING_CATEGORY = new EmiRecipeCategory(
+            OvergearedMod.loc("cooling"),
+            COOLING_WORKSTATION,
+            new EmiTexture(OvergearedMod.loc("textures/gui/cooling.png"), 0, 0, 16, 16)
+    ) {
+        @Override
+        public Component getName() {
+            return Component.translatable("gui.overgeared.jei.category.cooling");
+        }
+    };
+
     public static final EmiStack CASTING_WORKSTATION = EmiStack.of(ModBlocks.CASTING_FURNACE.get());
     public static final EmiRecipeCategory CASTING_CATEGORY = new EmiRecipeCategory(
             OvergearedMod.loc("casting"),
@@ -103,7 +115,7 @@ public class OvergearedEmiPlugin implements EmiPlugin {
             return Component.translatable("gui.overgeared.jei.category.casting");
         }
     };
-    public static final EmiStack FLINT = EmiStack.of(Items.FLINT);
+    public static final EmiStack FLINT = EmiStack.of(ModItems.ROCK);
     public static final EmiRecipeCategory ROCK_GETTING_CATEGORY = new EmiRecipeCategory(
             OvergearedMod.loc("flint_knapping"),
             FLINT,
@@ -175,6 +187,13 @@ public class OvergearedEmiPlugin implements EmiPlugin {
             registry.addRecipe(new FletchingEmiRecipe(holder));
         }
 
+        registry.addCategory(COOLING_CATEGORY);
+        registry.addWorkstation(COOLING_CATEGORY, COOLING_WORKSTATION);
+
+        for (RecipeHolder<CoolingRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipeTypes.COOLING_RECIPE.get())) {
+            registry.addRecipe(new CoolingEmiRecipe(holder));
+        }
+
         // Register Casting
         registry.addCategory(CASTING_CATEGORY);
         registry.addWorkstation(CASTING_CATEGORY, CASTING_WORKSTATION);
@@ -186,6 +205,8 @@ public class OvergearedEmiPlugin implements EmiPlugin {
         if (ServerConfig.ENABLE_DRAGON_BREATH_RECIPE.get())
             registry.addRecipe(new DragonBreathEmiRecipe());
 
+        registry.addCategory(KNAPPING_CATEGORY);
+        registry.addWorkstation(KNAPPING_CATEGORY, FLINT);
         if (ServerConfig.GET_ROCK_USING_FLINT.get())
             registry.addRecipe(new FlintKnappingEmiRecipe());
 
