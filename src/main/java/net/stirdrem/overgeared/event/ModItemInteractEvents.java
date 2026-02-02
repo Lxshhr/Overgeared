@@ -19,6 +19,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -55,6 +56,8 @@ import net.stirdrem.overgeared.client.ClientAnvilMinigameData;
 import net.stirdrem.overgeared.components.ModComponents;
 import net.stirdrem.overgeared.config.ServerConfig;
 import net.stirdrem.overgeared.datapack.GrindingBlacklistReloadListener;
+import net.stirdrem.overgeared.datapack.RockInteractionData;
+import net.stirdrem.overgeared.datapack.RockInteractionReloadListener;
 import net.stirdrem.overgeared.item.ModItems;
 import net.stirdrem.overgeared.item.custom.ToolCastItem;
 import net.stirdrem.overgeared.components.CastData;
@@ -876,70 +879,74 @@ public class ModItemInteractEvents {
     @SubscribeEvent
     public static void onFlintUsedOnStone(PlayerInteractEvent.RightClickBlock event) {
         Level level = event.getLevel();
-        if (level.isClientSide()) return;
+        if (level.isClientSide) return; // field now, not method
+
+        if (!(level instanceof ServerLevel serverLevel)) return;
 
         BlockPos pos = event.getPos();
         BlockState state = level.getBlockState(pos);
         ItemStack heldItem = event.getItemStack();
         Player player = event.getEntity();
 
-        // Check: Right-clicked block is stone and holding flint
-        if (state.is(Blocks.STONE) && heldItem.is(Items.FLINT) && ServerConfig.GET_ROCK_USING_FLINT.get()) {
+        for (RockInteractionData data : RockInteractionReloadListener.INSTANCE.getAll()) {
 
-            ServerLevel serverLevel = (ServerLevel) level;
-            boolean shouldConsumeFlint = false;
+            if (!data.matches(state, heldItem)) continue;
 
-            // Chance to drop the item (e.g., 30%)
-            if (RANDOM.nextFloat() < ServerConfig.ROCK_DROPPING_CHANCE.get()) {
-                ItemStack dropStack = new ItemStack(ModItems.ROCK.get());
+            RockInteractionData.ToolEntry tool = data.getTool(heldItem);
+            if (tool == null) continue;
 
-                /* spawn at block centre, slightly above */
+            // 🎲 Drop roll
+            if (level.random.nextFloat() < tool.dropChance()) {
+                ItemStack dropStack = tool.dropItem().copy();
+
                 double sx = pos.getX() + 0.5;
-                double sy = pos.getY() + 0.9; // a bit above
+                double sy = pos.getY() + 0.9;
                 double sz = pos.getZ() + 0.5;
 
-                /* vector from block to player */
                 double dx = player.getX() - sx;
-                double dy = (player.getY() + player.getEyeHeight()) - sy;
+                double dy = (player.getEyeY()) - sy; // eyeY helper exists now
                 double dz = player.getZ() - sz;
 
-                /* normalise + scale for gentle toss (speed ≈ 0.25) */
                 double len = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                if (len != 0) {
+                if (len > 0) {
                     dx /= len;
                     dy /= len;
                     dz /= len;
                 }
-                double speed = 0.25;
+
                 ItemEntity item = new ItemEntity(serverLevel, sx, sy, sz, dropStack);
-                item.setDeltaMovement(dx * speed, dy * speed, dz * speed);
-                item.setDefaultPickUpDelay();
+                item.setDeltaMovement(dx * 0.25, dy * 0.25, dz * 0.25);
+                item.setPickUpDelay(10); // setDefaultPickUpDelay removed
                 serverLevel.addFreshEntity(item);
-                level.setBlockAndUpdate(pos, Blocks.COBBLESTONE.defaultBlockState());
 
+                level.setBlockAndUpdate(pos, data.getResultBlock().defaultBlockState());
             }
-            shouldConsumeFlint = RANDOM.nextFloat() < ServerConfig.FLINT_BREAKING_CHANCE.get();
 
-            // Damage flint (optional)
-            // Handle flint consumption
-            if (shouldConsumeFlint) {
-                heldItem.shrink(1);
-                // Play tool breaking sound at player's location
-                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+            // 🔨 Tool damage / break roll
+            if (level.random.nextFloat() < tool.breakChance()) {
+
+                if (heldItem.isDamageableItem()) {
+                    heldItem.hurtAndBreak(1, player, LivingEntity.getSlotForHand(event.getHand()));
+                } else {
+                    heldItem.shrink(1);
+                }
+
+                level.playSound(null, player.blockPosition(),
                         SoundEvents.ITEM_BREAK, SoundSource.PLAYERS,
-                        0.8F, 0.8F + RANDOM.nextFloat() * 0.4F);
-
-                // Show breaking animation
-                player.swing(event.getHand());
+                        0.8F, 1.0F);
             } else {
-                // Play regular stone hit sound
-                level.playSound(null, pos, SoundEvents.STONE_HIT, SoundSource.BLOCKS,
-                        1.0F, 0.8F + RANDOM.nextFloat() * 0.4F);
+                level.playSound(null, pos,
+                        SoundEvents.STONE_HIT, SoundSource.BLOCKS,
+                        1.0F, 1.0F);
             }
+
+            player.swing(event.getHand(), true);
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
+            return;
         }
     }
+
 
     @SubscribeEvent
     public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
