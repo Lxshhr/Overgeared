@@ -40,58 +40,29 @@ public class RockInteractionReloadListener extends SimpleJsonResourceReloadListe
 
         for (Map.Entry<ResourceLocation, JsonElement> entry : jsons.entrySet()) {
             ResourceLocation id = entry.getKey();
+            JsonElement value = entry.getValue();
 
             try {
-                JsonObject obj = entry.getValue().getAsJsonObject();
+                // Handle single object or array of objects
+                if (value.isJsonObject()) {
+                    parseAndAddRockInteraction(id, value.getAsJsonObject());
+                } else if (value.isJsonArray()) {
+                    JsonArray array = value.getAsJsonArray();
+                    for (int i = 0; i < array.size(); i++) {
+                        JsonElement element = array.get(i);
+                        if (!element.isJsonObject()) {
+                            throw new JsonParseException("Expected object in array at index " + i);
+                        }
 
-                // ---------- BLOCKS ----------
-                ResourceLocation inputId = ResourceLocation.parse(GsonHelper.getAsString(obj, "input_block"));
-                Block inputBlock = BuiltInRegistries.BLOCK.get(inputId);
-                if (inputBlock == Blocks.AIR)
-                    throw new JsonParseException("Unknown input_block '" + inputId + "'");
+                        // Create a synthetic ID for each array entry
+                        ResourceLocation entryId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(),
+                                id.getPath() + "_" + i);
 
-                ResourceLocation resultId = ResourceLocation.parse(GsonHelper.getAsString(obj, "result_block"));
-                Block resultBlock = BuiltInRegistries.BLOCK.get(resultId);
-                if (resultBlock == Blocks.AIR)
-                    throw new JsonParseException("Unknown result_block '" + resultId + "'");
-
-                // ---------- TOOLS ----------
-                List<RockInteractionData.ToolEntry> tools = new ArrayList<>();
-                JsonArray toolsArray = GsonHelper.getAsJsonArray(obj, "tools");
-
-                for (JsonElement toolEl : toolsArray) {
-                    JsonObject toolObj = toolEl.getAsJsonObject();
-
-                    Ingredient ingredient;
-
-                    if (toolObj.has("item")) {
-                        JsonObject ingObj = new JsonObject();
-                        ingObj.addProperty("item", GsonHelper.getAsString(toolObj, "item"));
-                        ingredient = parseIngredient(ingObj);
-
-                    } else if (toolObj.has("tag")) {
-                        JsonObject ingObj = new JsonObject();
-                        ingObj.addProperty("tag", GsonHelper.getAsString(toolObj, "tag"));
-                        ingredient = parseIngredient(ingObj);
-
-                    } else {
-                        throwMissing(id, "Tool must have 'item' or 'tag'");
-                        return; // unreachable but required
+                        parseAndAddRockInteraction(entryId, element.getAsJsonObject());
                     }
-
-                    ResourceLocation dropId = ResourceLocation.parse(GsonHelper.getAsString(toolObj, "drop_item"));
-                    Item dropItem = BuiltInRegistries.ITEM.get(dropId);
-                    if (dropItem == Items.AIR)
-                        throw new JsonParseException("Unknown drop_item '" + dropId + "'");
-
-                    float dropChance = GsonHelper.getAsFloat(toolObj, "drop_chance");
-                    float breakChance = GsonHelper.getAsFloat(toolObj, "break_chance");
-
-                    tools.add(new RockInteractionData.ToolEntry(ingredient, new ItemStack(dropItem), dropChance, breakChance));
+                } else {
+                    throw new JsonParseException("Expected object or array");
                 }
-
-                RockInteractionData data = new RockInteractionData(inputBlock, tools, resultBlock);
-                DATA.put(id, data);
 
             } catch (Exception e) {
                 OvergearedMod.LOGGER.error("Failed to load rock interaction {}: {}", id, e.getMessage());
@@ -104,6 +75,57 @@ public class RockInteractionReloadListener extends SimpleJsonResourceReloadListe
         } else {
             OvergearedMod.LOGGER.info("Loaded {} rock interactions from datapacks", DATA.size());
         }
+    }
+
+    private void parseAndAddRockInteraction(ResourceLocation id, JsonObject obj) {
+        // ---------- BLOCKS ----------
+        ResourceLocation inputId = ResourceLocation.parse(GsonHelper.getAsString(obj, "input_block"));
+        Block inputBlock = BuiltInRegistries.BLOCK.get(inputId);
+        if (inputBlock == Blocks.AIR)
+            throw new JsonParseException("Unknown input_block '" + inputId + "'");
+
+        ResourceLocation resultId = ResourceLocation.parse(GsonHelper.getAsString(obj, "result_block"));
+        Block resultBlock = BuiltInRegistries.BLOCK.get(resultId);
+        if (resultBlock == Blocks.AIR)
+            throw new JsonParseException("Unknown result_block '" + resultId + "'");
+
+        // ---------- TOOLS ----------
+        List<RockInteractionData.ToolEntry> tools = new ArrayList<>();
+        JsonArray toolsArray = GsonHelper.getAsJsonArray(obj, "tools");
+
+        for (JsonElement toolEl : toolsArray) {
+            JsonObject toolObj = toolEl.getAsJsonObject();
+
+            Ingredient ingredient;
+
+            if (toolObj.has("item")) {
+                JsonObject ingObj = new JsonObject();
+                ingObj.addProperty("item", GsonHelper.getAsString(toolObj, "item"));
+                ingredient = parseIngredient(ingObj);
+
+            } else if (toolObj.has("tag")) {
+                JsonObject ingObj = new JsonObject();
+                ingObj.addProperty("tag", GsonHelper.getAsString(toolObj, "tag"));
+                ingredient = parseIngredient(ingObj);
+
+            } else {
+                throwMissing(id, "Tool must have 'item' or 'tag'");
+                return;
+            }
+
+            ResourceLocation dropId = ResourceLocation.parse(GsonHelper.getAsString(toolObj, "drop_item"));
+            Item dropItem = BuiltInRegistries.ITEM.get(dropId);
+            if (dropItem == Items.AIR)
+                throw new JsonParseException("Unknown drop_item '" + dropId + "'");
+
+            float dropChance = GsonHelper.getAsFloat(toolObj, "drop_chance");
+            float breakChance = GsonHelper.getAsFloat(toolObj, "break_chance");
+
+            tools.add(new RockInteractionData.ToolEntry(ingredient, new ItemStack(dropItem), dropChance, breakChance));
+        }
+
+        RockInteractionData data = new RockInteractionData(inputBlock, tools, resultBlock);
+        DATA.put(id, data);
     }
 
     public Collection<RockInteractionData> getAll() {
